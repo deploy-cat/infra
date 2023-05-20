@@ -1,0 +1,3 @@
+name: deploy-cat-infra
+description: deploy cat infrastructure on kubernetes
+runtime: nodejs
