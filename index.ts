@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
+import "./knative.ts";
 
 // Traefik Helm chart
 const traefikNamespace = new k8s.core.v1.Namespace("traefik", {
