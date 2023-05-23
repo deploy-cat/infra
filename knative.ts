@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
+import { letsEncryptClusterIssuer } from "./certManager";
 
 export const knativeNamespace = new k8s.core.v1.Namespace("knative-serving", {
   metadata: {
@@ -55,9 +56,42 @@ export const networkConfigMap = new k8s.core.v1.ConfigMap(
       name: "config-network",
       namespace: knativeNamespace.metadata.name,
     },
-    data: { "ingress-class": "kourier.ingress.networking.knative.dev" },
+    data: {
+      "ingress-class": "kourier.ingress.networking.knative.dev",
+      "auto-tls": "Enabled",
+      "http-protocol": "Redirected",
+      "namespace-wildcard-cert-selector": JSON.stringify({
+        matchExpressions: [{
+          key: "networking.knative.dev/disableWildcardCert",
+          operator: "NotIn",
+          values: [true],
+        }],
+      }),
+    },
   },
   { dependsOn: [knativeServingCore, kourier] },
+);
+
+export const certManagerConfigMap = new k8s.core.v1.ConfigMap(
+  "config-certmanager",
+  {
+    metadata: {
+      name: "config-certmanager",
+      namespace: knativeNamespace.metadata.name,
+      labels: {
+        "networking.knative.dev/certificate-provider": "cert-manager",
+      },
+    },
+    data: {
+      issuerRef: Object.entries({
+        kind: "ClusterIssuer",
+        name: "letsencrypt",
+      })
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n"),
+    },
+  },
+  { dependsOn: [letsEncryptClusterIssuer, knativeCertmanager] },
 );
 
 export const domainConfigMap = new k8s.core.v1.ConfigMap(

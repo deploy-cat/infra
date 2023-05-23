@@ -2,11 +2,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 
 // Cert-Manager Helm chart
-const certManagerNamespace = new k8s.core.v1.Namespace("cert-manager", {
+export const certManagerNamespace = new k8s.core.v1.Namespace("cert-manager", {
   metadata: { name: "cert-manager" },
 });
 
-const certManagerChart = new k8s.helm.v3.Chart("cert-manager", {
+export const certManagerChart = new k8s.helm.v3.Chart("cert-manager", {
   chart: "cert-manager",
   namespace: certManagerNamespace.metadata.name,
   fetchOpts: {
@@ -19,8 +19,8 @@ const certManagerChart = new k8s.helm.v3.Chart("cert-manager", {
 });
 
 // Create a ClusterIssuer for Let's Encrypt
-const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
-  "letsencrypt-clusterissuer",
+export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
+  "letsencrypt",
   {
     apiVersion: "cert-manager.io/v1",
     kind: "ClusterIssuer",
