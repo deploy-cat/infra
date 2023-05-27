@@ -9,5 +9,6 @@ export const domain = new digitalocean.Domain("default", {
 export const wildcardRecord = new digitalocean.DnsRecord("*", {
   domain: domain.id,
   type: "A",
+  name: "*",
   value: kourierLoadBalancerIP,
 });
