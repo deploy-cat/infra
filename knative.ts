@@ -2,18 +2,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { letsEncryptClusterIssuer } from "./certManager";
 
-// namespaces
-// export const knativeNamespace = new k8s.core.v1.Namespace("knative-serving", {
-//   metadata: {
-//     name: "knative-serving",
-//   },
-// });
-// export const kourierNamespace = new k8s.core.v1.Namespace("kourier-system", {
-//   metadata: {
-//     name: "kourier-system",
-//   },
-// });
-
 // Deploy Knative Serving component
 // const knativeServingCRDs = new k8s.yaml.ConfigFile("knative-serving-crds", {
 //   file:
@@ -54,17 +42,12 @@ export const kourier = new k8s.yaml.ConfigFile(
 
 const provider = new k8s.Provider("k8s", { enableServerSideApply: true });
 
-const existingNetworkConfigMap = new k8s.core.v1.ConfigMap("config-network", {
-  metadata: { name: "config-network", namespace: "knative-serving" },
-  data: { key: "value" },
-});
-
 export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
   "config-network-patch",
   {
     metadata: {
-      name: existingNetworkConfigMap.metadata.name,
-      namespace: existingNetworkConfigMap.metadata.namespace,
+      name: "config-network",
+      namespace: "knative-serving",
     },
     data: {
       "ingress-class": "kourier.ingress.networking.knative.dev",
@@ -82,17 +65,12 @@ export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
   { dependsOn: [knativeServingCore], provider },
 );
 
-const existingDomainConfigMap = new k8s.core.v1.ConfigMap("config-domain", {
-  metadata: { name: "config-domain", namespace: "knative-serving" },
-  data: { key: "value" },
-});
-
 export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
   "config-domain-patch",
   {
     metadata: {
-      name: existingDomainConfigMap.metadata.name,
-      namespace: existingDomainConfigMap.metadata.namespace,
+      name: "config-domain",
+      namespace: "knative-serving",
     },
     data: {
       "deploy.fish": "",
@@ -101,8 +79,8 @@ export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
   { dependsOn: [knativeServingCore], provider },
 );
 
-export const certManagerConfigMap = new k8s.core.v1.ConfigMap(
-  "config-certmanager",
+export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
+  "config-certmanager-patch",
   {
     metadata: {
       name: "config-certmanager",
@@ -120,7 +98,7 @@ export const certManagerConfigMap = new k8s.core.v1.ConfigMap(
         .join("\n"),
     },
   },
-  { dependsOn: [knativeServingCore, letsEncryptClusterIssuer] },
+  { dependsOn: [knativeCertmanager, letsEncryptClusterIssuer], provider },
 );
 
 // Export the Kourier LoadBalancer service
