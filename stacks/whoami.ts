@@ -13,9 +13,13 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
       namespace: deployCatNamespace.metadata.name,
     },
     spec: {
-      containers: [
-        { image: "traefik/whoami" },
-      ],
+      template: {
+        spec: {
+          containers: [
+            { image: "traefik/whoami" },
+          ],
+        },
+      },
     },
   },
   { provider: doK8sProvider },
