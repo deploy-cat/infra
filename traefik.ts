@@ -1,10 +1,11 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
+import { doK8sProvider } from "./cluster";
 
 // Traefik Helm chart
 const traefikNamespace = new k8s.core.v1.Namespace("traefik", {
   metadata: { name: "traefik" },
-});
+}, { provider: doK8sProvider });
 
 const traefikChart = new k8s.helm.v3.Chart("traefik", {
   chart: "traefik",
@@ -24,4 +25,4 @@ const traefikChart = new k8s.helm.v3.Chart("traefik", {
     },
   },
   version: "23.0.1", // Traefik Helm chart version
-});
+}, { provider: doK8sProvider });

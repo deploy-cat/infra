@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { letsEncryptClusterIssuer } from "./certManager";
+import { doK8sProvider } from "./cluster";
 
 // Deploy Knative Serving component
 // const knativeServingCRDs = new k8s.yaml.ConfigFile("knative-serving-crds", {
@@ -15,6 +16,7 @@ export const knativeServingCore = new k8s.yaml.ConfigFile(
   },
   {
     dependsOn: [],
+    provider: doK8sProvider,
   },
 );
 export const knativeCertmanager = new k8s.yaml.ConfigFile(
@@ -25,6 +27,7 @@ export const knativeCertmanager = new k8s.yaml.ConfigFile(
   },
   {
     dependsOn: [knativeServingCore, letsEncryptClusterIssuer],
+    provider: doK8sProvider,
   },
 );
 
@@ -35,12 +38,10 @@ export const kourier = new k8s.yaml.ConfigFile(
     file:
       "https://github.com/knative/net-kourier/releases/download/knative-v1.10.0/kourier.yaml",
   },
-  { dependsOn: [knativeServingCore] },
+  { dependsOn: [knativeServingCore], provider: doK8sProvider },
 );
 
 //configs
-
-const provider = new k8s.Provider("k8s", { enableServerSideApply: true });
 
 export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
   "config-network-patch",
@@ -62,7 +63,7 @@ export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
       }),
     },
   },
-  { dependsOn: [knativeServingCore], provider },
+  { dependsOn: [knativeServingCore], provider: doK8sProvider },
 );
 
 export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
@@ -76,7 +77,7 @@ export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
       "deploy.fish": "",
     },
   },
-  { dependsOn: [knativeServingCore], provider },
+  { dependsOn: [knativeServingCore], provider: doK8sProvider },
 );
 
 export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
@@ -98,7 +99,10 @@ export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
         .join("\n"),
     },
   },
-  { dependsOn: [knativeCertmanager, letsEncryptClusterIssuer], provider },
+  {
+    dependsOn: [knativeCertmanager, letsEncryptClusterIssuer],
+    provider: doK8sProvider,
+  },
 );
 
 // Export the Kourier LoadBalancer service

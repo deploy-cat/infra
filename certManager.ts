@@ -1,22 +1,26 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
+import { doK8sProvider } from "./cluster";
 
 // Cert-Manager Helm chart
 export const certManagerNamespace = new k8s.core.v1.Namespace("cert-manager", {
   metadata: { name: "cert-manager" },
-});
+}, { provider: doK8sProvider });
 
-export const certManagerChart = new k8s.helm.v3.Chart("cert-manager", {
+export const certManagerChart = new k8s.helm.v3.Release("cert-manager", {
   chart: "cert-manager",
   namespace: certManagerNamespace.metadata.name,
-  fetchOpts: {
+  repositoryOpts: {
     repo: "https://charts.jetstack.io",
   },
   values: {
     installCRDs: true,
+    livenessProbe: {
+      enabled: true,
+    },
   },
-  version: "1.12.0", // Cert-Manager Helm chart version
-}, { dependsOn: [certManagerNamespace] });
+  version: "1.12.1", // Cert-Manager Helm chart version
+}, { dependsOn: [certManagerNamespace], provider: doK8sProvider });
 
 // Create a ClusterIssuer for Let's Encrypt
 export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
@@ -47,8 +51,8 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
             },
           },
           {
+            selector: {},
             http01: {
-              selector: {},
               ingress: {
                 class: "traefik",
               },
@@ -58,5 +62,5 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
       },
     },
   },
-  { dependsOn: certManagerChart },
+  { dependsOn: certManagerChart, provider: doK8sProvider },
 );
