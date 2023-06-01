@@ -92,7 +92,7 @@ export const domainConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
   { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
 );
 
-export const certManagerConfigMap = knativeServingCore.getResource(
+export const certManagerConfigMap = knativeCertmanager.getResource(
   "v1/ConfigMap",
   "knative-serving",
   "config-certmanager",
@@ -102,7 +102,7 @@ export const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
   "config-certmanager-patch",
   {
     metadata: {
-      name: "config-certmanager",
+      name: certManagerConfigMap.metadata.name,
       namespace: certManagerConfigMap.metadata.namespace,
       labels: {
         "networking.knative.dev/certificate-provider": "cert-manager",
