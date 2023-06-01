@@ -1,8 +1,9 @@
 import * as digitalocean from "@pulumi/digitalocean";
 import { kourierLoadBalancerIP } from "./knative";
+import { config } from "./index";
 
 export const domain = new digitalocean.Domain("default", {
-  name: "deploy.fish",
+  name: config.require("knative-domain"),
   ipAddress: kourierLoadBalancerIP.apply((item) => item),
 });
 

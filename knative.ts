@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { letsEncryptClusterIssuer } from "./certManager";
 import { doK8sProvider, doK8sProviderWithSSA } from "./cluster";
+import { config } from "./index";
 
 // Deploy Knative Serving component
 // const knativeServingCRDs = new k8s.yaml.ConfigFile("knative-serving-crds", {
@@ -86,10 +87,10 @@ export const domainConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
       namespace: domainConfigMap.metadata.namespace,
     },
     data: {
-      "deploy.fish": "",
+      [config.require("knative-domain")]: "",
     },
   },
-  { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
+  { provider: doK8sProviderWithSSA },
 );
 
 export const certManagerConfigMap = knativeCertmanager.getResource(
@@ -109,18 +110,17 @@ export const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
       },
     },
     data: {
-      issuerRef: Object.entries({
-        kind: "ClusterIssuer",
-        name: "letsencrypt",
-      })
-        .map(([key, value]) => `${key}: ${value}`)
-        .join("\n"),
+      issuerRef: letsEncryptClusterIssuer.metadata.apply(({ name }) =>
+        Object.entries({
+          kind: "ClusterIssuer",
+          name,
+        })
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("\n")
+      ),
     },
   },
-  {
-    dependsOn: [knativeCertmanager, letsEncryptClusterIssuer],
-    provider: doK8sProviderWithSSA,
-  },
+  { provider: doK8sProviderWithSSA },
 );
 
 // Export the Kourier LoadBalancer service

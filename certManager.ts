@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { doK8sProvider } from "./cluster";
+import { config } from "./index";
 
 // Cert-Manager Helm chart
 export const certManagerNamespace = new k8s.core.v1.Namespace("cert-manager", {
@@ -39,7 +40,7 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
         solvers: [
           {
             selector: {
-              dnsZones: ["deploy.fish"],
+              dnsZones: [config.require("knative-domain")],
             },
             dns01: {
               digitalocean: {

@@ -1,8 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as kubernetes from "@pulumi/kubernetes";
 import { doK8sProvider } from "./cluster";
-
-const config = new pulumi.Config();
+import { config } from "./index";
 
 const digitaloceanCredentials = new kubernetes.core.v1.Secret(
   "lets-encrypt-do-dns",
