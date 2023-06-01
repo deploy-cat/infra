@@ -5,3 +5,4 @@ import "./secrets.ts";
 import "./certManager.ts";
 import "./knative.ts";
 import "./dns.ts";
+import "./stacks/whoami.ts";
