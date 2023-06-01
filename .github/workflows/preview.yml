@@ -1,22 +1,18 @@
-name: Pulumi
+name: Pulumi Preview
 
 on:
   push:
-    branches:
-      - staging
   workflow_dispatch:
-    branches:
-      - staging
 
 jobs:
   up:
-    name: Deploy
+    name: Preview
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: pulumi/actions@v4
         with:
-          command: up
+          command: preview
           stack-name: deploy-cat/staging
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
