@@ -43,12 +43,18 @@ export const kourier = new k8s.yaml.ConfigFile(
 
 //configs
 
-export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
+export const networkConfigMap = knativeServingCore.getResource(
+  "v1/ConfigMap",
+  "knative-serving",
+  "config-network",
+);
+
+export const networkConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
   "config-network-patch",
   {
     metadata: {
-      name: "config-network",
-      namespace: "knative-serving",
+      name: networkConfigMap.metadata.name,
+      namespace: networkConfigMap.metadata.namespace,
     },
     data: {
       "ingress-class": "kourier.ingress.networking.knative.dev",
@@ -66,12 +72,18 @@ export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
   { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
 );
 
-export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
+export const domainConfigMap = knativeServingCore.getResource(
+  "v1/ConfigMap",
+  "knative-serving",
+  "config-domain",
+);
+
+export const domainConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
   "config-domain-patch",
   {
     metadata: {
-      name: "config-domain",
-      namespace: "knative-serving",
+      name: domainConfigMap.metadata.name,
+      namespace: domainConfigMap.metadata.namespace,
     },
     data: {
       "deploy.fish": "",
@@ -80,12 +92,18 @@ export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
   { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
 );
 
-export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
+export const certManagerConfigMap = knativeServingCore.getResource(
+  "v1/ConfigMap",
+  "knative-serving",
+  "config-certmanager",
+);
+
+export const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
   "config-certmanager-patch",
   {
     metadata: {
       name: "config-certmanager",
-      namespace: "knative-serving",
+      namespace: certManagerConfigMap.metadata.namespace,
       labels: {
         "networking.knative.dev/certificate-provider": "cert-manager",
       },
