@@ -16,7 +16,10 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
       template: {
         spec: {
           containers: [
-            { image: "traefik/whoami" },
+            {
+              image: "traefik/whoami",
+              ports: [{ containerPort: 80 }],
+            },
           ],
         },
       },
