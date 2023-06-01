@@ -1,4 +1,4 @@
 encryptionsalt: v1:KLlK68nLsDo=:v1:gJib0FvKErnXzGyj:znDjV0N94hjecRtkfygK8I2x0PhfUA==
 config:
-  deploy-cat-infra:do-access-token:
-    secure: v1:YmKaPqNEYbpbFqMP:cxeTWazEMcTjOby3Z5MqaQUwd/TnilKyAJjhtdKyLzAfOU8swJV0ofyZxcmD3Ie3N61iIjdj5DQNr1TTsAP1iDSfRu2rFlLrPoNAiowLWW4L/ffb509N
+  digitalocean:token:
+    secure: v1:L4zPxUcKytLNlEfR:gXsDBUgfeAU9xojlOglqxCraIGBi9WX7/z/xIa6dBE5C/8MHnyrARiDu0wmIMqRYUf7uy5Z8UEgQjwYiwfkM2pBuuE5u6aKmAp+cAyYoN2mTcO5byow+
