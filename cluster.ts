@@ -19,8 +19,12 @@ export const doK8sCluster = new digitalocean.KubernetesCluster(
   },
 );
 
-export const doK8sProvider = new k8s.Provider("doK8sProvider", {
-  kubeconfig: doK8sCluster.kubeConfigs[0].rawConfig,
+const kubeconfig = doK8sCluster.kubeConfigs[0].rawConfig;
+
+export const doK8sProvider = new k8s.Provider("doK8sProvider", { kubeconfig });
+
+export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
+  kubeconfig,
   enableServerSideApply: true,
 });
 

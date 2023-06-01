@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { letsEncryptClusterIssuer } from "./certManager";
-import { doK8sProvider } from "./cluster";
+import { doK8sProvider, doK8sProviderWithSSA } from "./cluster";
 
 // Deploy Knative Serving component
 // const knativeServingCRDs = new k8s.yaml.ConfigFile("knative-serving-crds", {
@@ -63,7 +63,7 @@ export const networkConfigMap = new k8s.core.v1.ConfigMapPatch(
       }),
     },
   },
-  { dependsOn: [knativeServingCore], provider: doK8sProvider },
+  { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
 );
 
 export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
@@ -77,7 +77,7 @@ export const domainConfigMap = new k8s.core.v1.ConfigMapPatch(
       "deploy.fish": "",
     },
   },
-  { dependsOn: [knativeServingCore], provider: doK8sProvider },
+  { dependsOn: [knativeServingCore], provider: doK8sProviderWithSSA },
 );
 
 export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
@@ -101,7 +101,7 @@ export const certManagerConfigMap = new k8s.core.v1.ConfigMapPatch(
   },
   {
     dependsOn: [knativeCertmanager, letsEncryptClusterIssuer],
-    provider: doK8sProvider,
+    provider: doK8sProviderWithSSA,
   },
 );
 
