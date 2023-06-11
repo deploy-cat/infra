@@ -1,9 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
-import * as kubernetes from "@pulumi/kubernetes";
+import * as k8s from "@pulumi/kubernetes";
 import { doK8sProvider } from "./cluster";
 import { config } from "./index";
 
-const digitaloceanCredentials = new kubernetes.core.v1.Secret(
+const digitaloceanCredentials = new k8s.core.v1.Secret(
   "lets-encrypt-do-dns",
   {
     metadata: {
