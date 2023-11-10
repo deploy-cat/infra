@@ -12,6 +12,9 @@ jobs:
   up:
     name: Deploy
     runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.deploycat.io
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3

@@ -21,7 +21,7 @@ export const certManagerChart = new k8s.helm.v3.Release("cert-manager", {
     },
   },
   version: "1.12.1", // Cert-Manager Helm chart version
-}, { dependsOn: [certManagerNamespace], provider: doK8sProvider });
+}, { provider: doK8sProvider });
 
 // Create a ClusterIssuer for Let's Encrypt
 export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(

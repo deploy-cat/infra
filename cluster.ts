@@ -6,7 +6,7 @@ export const doK8sCluster = new digitalocean.KubernetesCluster(
   "deploy-cat-staging",
   {
     region: digitalocean.Region.AMS3,
-    version: "1.27.2-do.0",
+    version: "1.28.2-do.0",
     autoUpgrade: true,
     ha: false,
     nodePool: {

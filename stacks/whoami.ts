@@ -3,7 +3,7 @@ import * as k8s from "@pulumi/kubernetes";
 import { doK8sProvider } from "../cluster";
 import { deployCatNamespace } from "./system";
 
-export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
+export const whoami = new k8s.apiextensions.CustomResource(
   "whoami",
   {
     apiVersion: "serving.knative.dev/v1",

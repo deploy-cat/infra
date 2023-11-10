@@ -13,7 +13,6 @@ const deploycatWebSecrets = new k8s.core.v1.Secret(
     },
     type: "Opaque",
     data: {
-      "access-token": config.requireSecret("do-access-token"),
       "GITHUB_ID": config.requireSecret("deploycat-github-id"),
       "GITHUB_SECRET": config.requireSecret("deploycat-github-secret"),
       "AUTH_SECRET": config.requireSecret("deploycat-auth-secret"),
@@ -22,7 +21,7 @@ const deploycatWebSecrets = new k8s.core.v1.Secret(
   { provider: doK8sProvider },
 );
 
-export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
+export const deploycatWeb = new k8s.apiextensions.CustomResource(
   "app",
   {
     apiVersion: "serving.knative.dev/v1",
@@ -50,7 +49,6 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
                 },
                 {
                   name: "GITHUB_SECRET",
-                  value: "World",
                   valueFrom: {
                     secretKeyRef: {
                       name: deploycatWebSecrets.metadata.name,
@@ -60,7 +58,6 @@ export const letsEncryptClusterIssuer = new k8s.apiextensions.CustomResource(
                 },
                 {
                   name: "AUTH_SECRET",
-                  value: "World",
                   valueFrom: {
                     secretKeyRef: {
                       name: deploycatWebSecrets.metadata.name,

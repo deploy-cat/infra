@@ -10,4 +10,4 @@ config:
     secure: v1:PZJ3c6wo70k98js7:JLWCmRkjpc3BIWxDmrZLqJJzzpsf+6luYqAW0TN5VicUOQ78A7b1OAzYhOvrrzWcREveQC6Qkk1P5CgX0xZUXNdHZB+kgKm2tNKWsKIhREDVYgXeYRba
   deploy-cat-infra:knative-domain: deploy.fish
   digitalocean:token:
-    secure: v1:L4zPxUcKytLNlEfR:gXsDBUgfeAU9xojlOglqxCraIGBi9WX7/z/xIa6dBE5C/8MHnyrARiDu0wmIMqRYUf7uy5Z8UEgQjwYiwfkM2pBuuE5u6aKmAp+cAyYoN2mTcO5byow+
+    secure: v1:UPF2+M2m8xjUENq7:zDpNcBQ81seVZF6Z6n1jPkcJm7+cjZMD1u0Syd+Xq7EBJGdh1MSPihVPuiFsJfSpnREG9ea3tAm0AU2fLpGQG65kqSBhaakvzUkxDp7B8VEyUZVGhSyd
