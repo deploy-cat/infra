@@ -4,7 +4,7 @@ config:
     secure: v1:fQoO6T25M2ve1YZM:mzkTnyoLTYakmm3zRqtwFPXun3aYzCIR1mUUHU+FXWrRIk/Jm/DPBcxtWCxNLH6RYQ7oULRb+urJI7ayvzJYZLe3lFqx3kW2a/AnNWneUuY=
   deploy-cat-infra:deploycat-github-id:
     secure: v1:9+AwhcvL/oeprh6E:gcqAI0Ajhr5PDo3sYnFlD/ZKCDDDHanVtlUE/l3NJaPfvItv
-  deploy-cat-infra:deploycat-github-secret:
+  deploy-cat-infra:deploycat-auth-secret:
     secure: v1:euz/eKmbQkxFI/yy:4nMRFJ6qks/M91EYRnDZ1GECL1b9mNMVPPzon8kGm+UcDKp/JFDiNWkSLfgpk0EVy9wxuY7i2mc=
   deploy-cat-infra:do-access-token:
     secure: v1:PZJ3c6wo70k98js7:JLWCmRkjpc3BIWxDmrZLqJJzzpsf+6luYqAW0TN5VicUOQ78A7b1OAzYhOvrrzWcREveQC6Qkk1P5CgX0xZUXNdHZB+kgKm2tNKWsKIhREDVYgXeYRba

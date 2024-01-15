@@ -13,12 +13,12 @@ const deploycatWebSecrets = new k8s.core.v1.Secret(
     },
     type: "Opaque",
     data: {
-      "GITHUB_ID": config.requireSecret("deploycat-github-id"),
-      "GITHUB_SECRET": config.requireSecret("deploycat-github-secret"),
-      "AUTH_SECRET": config.requireSecret("deploycat-auth-secret"),
+      GITHUB_ID: config.requireSecret("deploycat-github-id"),
+      GITHUB_SECRET: config.requireSecret("deploycat-github-secret"),
+      AUTH_SECRET: config.requireSecret("deploycat-auth-secret"),
     },
   },
-  { provider: doK8sProvider },
+  { provider: doK8sProvider }
 );
 
 export const deploycatWeb = new k8s.apiextensions.CustomResource(
@@ -32,6 +32,11 @@ export const deploycatWeb = new k8s.apiextensions.CustomResource(
     },
     spec: {
       template: {
+        metadata: {
+          annotations: {
+            "autoscaling.knative.dev/min-scale": "1",
+          },
+        },
         spec: {
           containers: [
             {
@@ -72,5 +77,5 @@ export const deploycatWeb = new k8s.apiextensions.CustomResource(
       },
     },
   },
-  { provider: doK8sProvider },
+  { provider: doK8sProvider }
 );
