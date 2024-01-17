@@ -7,9 +7,9 @@ export const domain = new digitalocean.Domain("default", {
   ipAddress: kourierLoadBalancerIP.apply((item) => item),
 });
 
-export const wildcardRecord = new digitalocean.DnsRecord("wildcard", {
-  domain: domain.id,
-  type: "A",
-  name: "*",
-  value: kourierLoadBalancerIP.apply((item) => item),
-}, { dependsOn: domain });
+// export const wildcardRecord = new digitalocean.DnsRecord("wildcard", {
+//   domain: domain.id,
+//   type: "A",
+//   name: "*",
+//   value: kourierLoadBalancerIP.apply((item) => item),
+// });

@@ -11,8 +11,8 @@ export type KnativeOptions = {
 const pulumiComponentNamespace: string = "deploycat:Knative";
 
 export class Knative extends pulumi.ComponentResource {
-  kourierServiceName: pulumi.Output<String>;
-  kourierLoadBalancerIP: pulumi.Output<String>;
+  kourierServiceName: pulumi.Output<string>;
+  kourierLoadBalancerIP: pulumi.Output<string>;
 
   constructor(
     name: string,

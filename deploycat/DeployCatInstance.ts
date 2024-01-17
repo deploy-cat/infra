@@ -1,15 +1,18 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { Knative } from "./Knative.ts";
-import { CertManager } from "./CertManager.ts";
-import { LetsEncrypt } from "./LetsEncrypt.ts";
+import { Knative } from "./Knative";
+import { CertManager } from "./CertManager";
+import { LetsEncrypt } from "./LetsEncrypt";
 
 export type DeployCatInstanceOptions = {
   namespace: pulumi.Input<string>;
   hostname: pulumi.Input<string>;
   letsEncrypt: {
     email?: pulumi.Input<string>;
-    solvers?: Array<string>;
+    solvers?: Array<{
+      name: string;
+      opts: { [key: string]: pulumi.Input<string> };
+    }>;
     extraSolvers?: Array<any>;
   };
 };
@@ -40,7 +43,11 @@ export class DeployCatInstance extends pulumi.ComponentResource {
         hostname: args.hostname,
         ...args.letsEncrypt,
       },
-      { provider: opts?.provider, dependsOn: this.certManager, parent: this.certManager }
+      {
+        provider: opts?.provider,
+        dependsOn: this.certManager,
+        parent: this.certManager,
+      }
     );
 
     this.knative = new Knative(

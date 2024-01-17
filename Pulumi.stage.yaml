@@ -1,0 +1,7 @@
+encryptionsalt: v1:hzGRt6LF3Us=:v1:ZTGq8K4Pbpth7Gez:wpnFCLMjyjeHkOX+XgxU4NeRMAs2XQ==
+config:
+  deploy-cat-infra:do-access-token:
+    secure: v1:18SQRJXCzDP6pi06:snc2zJwY8b3UfsOzQKua3Jm2lSK8bnBYOYb7jCvcdEfKizPmyTUvF1OGM7Kv86RXf3JRzGHRdBHAMFlQYvH3ZnAboXWfAG9w/vuV0sjNb1OTubLlpLzm
+  deploy-cat-infra:knative-domain: deploy.fish
+  digitalocean:token:
+    secure: v1:dnQZD3cTiK2C5WFD:5CbdNPbt2Mw7frN+WMlMUJF7297GDzDiUBkotx3rA+me0pu8zXgm3Fp05koxEJ+JKdpuxvgthzhlrGWZbnc7dhOXen7Qm6heP2A2s9iSbZ2xra3DJtyZ

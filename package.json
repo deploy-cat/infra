@@ -5,6 +5,7 @@
     "@types/node": "^16"
   },
   "dependencies": {
+    "@pulumi/command": "^0.9.2",
     "@pulumi/digitalocean": "^4.19.3",
     "@pulumi/kubernetes": "^3.28.1",
     "@pulumi/kubernetesx": "^0.1.6",

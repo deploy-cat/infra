@@ -4,11 +4,14 @@ import * as k8s from "@pulumi/kubernetes";
 export type LetsEncryptOptions = {
   hostname: pulumi.Input<string>;
   email?: pulumi.Input<string>;
-  solvers?: Array<any>;
+  solvers?: Array<{
+    name: string;
+    opts: { [key: string]: pulumi.Input<string> };
+  }>;
   extraSolvers?: Array<any>;
 };
 
-const pulumiComponentNamespace: string = "turingev:LetsEncrypt";
+const pulumiComponentNamespace: string = "daploycat:LetsEncrypt";
 
 export class LetsEncrypt extends pulumi.ComponentResource {
   public readonly issuer: k8s.apiextensions.CustomResource;
@@ -19,7 +22,10 @@ export class LetsEncrypt extends pulumi.ComponentResource {
   ) {
     super(pulumiComponentNamespace, name, args, opts);
 
-    const getSolver = (name: string, solverOpts: any) => {
+    const getSolver = (
+      name: string,
+      solverOpts: { [key: string]: pulumi.Input<string> }
+    ) => {
       switch (name) {
         case "do": {
           const digitaloceanCredentials = new k8s.core.v1.Secret(
@@ -34,11 +40,11 @@ export class LetsEncrypt extends pulumi.ComponentResource {
                 "access-token": solverOpts.accessToken,
               },
             },
-            { provider: opts?.provider }
+            { provider: opts?.provider, parent: this }
           );
           return {
             selector: {
-              dnsZones: args.hostname,
+              dnsZones: [args.hostname],
             },
             dns01: {
               digitalocean: {
