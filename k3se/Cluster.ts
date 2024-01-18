@@ -32,7 +32,7 @@ export class Cluster extends pulumi.ComponentResource {
     const getKubeconfigCmd = new command.local.Command(
       "getKubeconfigCmd",
       {
-        create: `k3se up -s -k /tmp/k3se-kubeconfig ${args.configPath} &> /dev/null && cat /tmp/k3se-kubeconfig`,
+        create: `k3se up -s -k /tmp/k3se-kubeconfig ./k3se/${args.configPath} &> /dev/null && cat /tmp/k3se-kubeconfig`,
       },
       { parent: this }
     );
