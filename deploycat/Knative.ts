@@ -29,10 +29,9 @@ export class Knative extends pulumi.ComponentResource {
     const knativeServingCore = new k8s.yaml.ConfigFile(
       "knative-serving-core",
       {
-        file: "https://github.com/knative/serving/releases/download/knative-v1.10.1/serving-core.yaml",
+        file: "https://github.com/knative/serving/releases/download/knative-v1.12.3/serving-core.yaml",
       },
       {
-        dependsOn: [this],
         provider: opts?.provider,
         parent: this,
       }
@@ -40,7 +39,7 @@ export class Knative extends pulumi.ComponentResource {
     const knativeCertmanager = new k8s.yaml.ConfigFile(
       "knative-net-certmanager",
       {
-        file: "https://github.com/knative/net-certmanager/releases/download/knative-v1.10.0/release.yaml",
+        file: "https://github.com/knative/net-certmanager/releases/download/knative-v1.12.3/release.yaml",
       },
       {
         dependsOn: [knativeServingCore, args.clusterIssuer],
@@ -53,7 +52,7 @@ export class Knative extends pulumi.ComponentResource {
     const kourier = new k8s.yaml.ConfigFile(
       "kourier",
       {
-        file: "https://github.com/knative/net-kourier/releases/download/knative-v1.10.0/kourier.yaml",
+        file: "https://github.com/knative/net-kourier/releases/download/knative-v1.12.3/kourier.yaml",
       },
       {
         dependsOn: [knativeServingCore],
@@ -118,7 +117,6 @@ export class Knative extends pulumi.ComponentResource {
       },
       {
         provider: args.providerWithSSA,
-        dependsOn: [knativeServingCore],
         parent: this,
       }
     );
@@ -152,7 +150,6 @@ export class Knative extends pulumi.ComponentResource {
       },
       {
         provider: args.providerWithSSA,
-        dependsOn: [knativeServingCore, knativeCertmanager],
         parent: this,
       }
     );

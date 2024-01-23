@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { Knative } from "./Knative";
+import { KnativeOperator } from "./KnativeOperator";
 import { CertManager } from "./CertManager";
 import { LetsEncrypt } from "./LetsEncrypt";
 
@@ -22,7 +22,7 @@ const pulumiComponentNamespace: string = "deploycat:Instance";
 export class DeployCatInstance extends pulumi.ComponentResource {
   certManager: CertManager;
   letsEncrypt: LetsEncrypt;
-  knative: Knative;
+  knative: KnativeOperator;
 
   constructor(
     name: string,
@@ -32,7 +32,7 @@ export class DeployCatInstance extends pulumi.ComponentResource {
     super(pulumiComponentNamespace, name, args, opts);
 
     this.certManager = new CertManager(
-      "turingev-certmanager",
+      "certmanager",
       { namespaceName: "cert-manager", helmChartVersion: "1.12.3" },
       { provider: opts?.provider, parent: this }
     );
@@ -50,12 +50,11 @@ export class DeployCatInstance extends pulumi.ComponentResource {
       }
     );
 
-    this.knative = new Knative(
+    this.knative = new KnativeOperator(
       "knative",
       {
-        providerWithSSA: opts?.provider,
         hostname: args.hostname,
-        namespace: "knative",
+        namespaceName: "knative-serving",
         clusterIssuer: this.letsEncrypt.issuer,
       },
       {

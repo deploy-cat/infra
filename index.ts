@@ -23,7 +23,7 @@ export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
 
 // deploy deploycat on cluster
 const deploycat = new DeployCatInstance(
-  "do1",
+  "hetzner01",
   {
     namespace: "deploycat-system",
     hostname: hostname,
@@ -38,26 +38,26 @@ const deploycat = new DeployCatInstance(
       ],
     },
   },
-  { provider: doK8sProviderWithSSA, parent: hetzner01 }
+  { provider: doK8sProvider, parent: hetzner01 }
 );
 
 // set dns records
-export const domain = new digitalocean.Domain(
-  "default",
-  {
-    name: hostname,
-    ipAddress: deploycat.knative.kourierLoadBalancerIP.apply((item) => item),
-  },
-  { dependsOn: [deploycat] }
-);
+// export const domain = new digitalocean.Domain(
+//   "default",
+//   {
+//     name: hostname,
+//     ipAddress: deploycat.knative.kourierLoadBalancerIP,
+//   },
+//   { dependsOn: [deploycat.knative] }
+// );
 
-export const wildcardRecord = new digitalocean.DnsRecord(
-  "wildcard",
-  {
-    domain: domain.id,
-    type: "A",
-    name: "*",
-    value: deploycat.knative.kourierLoadBalancerIP.apply((item) => item),
-  },
-  { dependsOn: [domain] }
-);
+// export const wildcardRecord = new digitalocean.DnsRecord(
+//   "wildcard",
+//   {
+//     domain: domain.id,
+//     type: "A",
+//     name: "*",
+//     value: deploycat.knative.kourierLoadBalancerIP.apply((item) => item),
+//   },
+//   { dependsOn: [domain] }
+// );
