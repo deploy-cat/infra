@@ -35,7 +35,7 @@ export class CertManager extends pulumi.ComponentResource {
       {
         namespace: args.namespaceName,
         chart: "cert-manager",
-        version: args.helmChartVersion || "v1.0.3",
+        version: args.helmChartVersion || "v1.14.4",
         repositoryOpts: {
           repo: "https://charts.jetstack.io",
         },

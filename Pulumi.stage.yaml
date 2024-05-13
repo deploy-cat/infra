@@ -1,5 +1,11 @@
 encryptionsalt: v1:hzGRt6LF3Us=:v1:ZTGq8K4Pbpth7Gez:wpnFCLMjyjeHkOX+XgxU4NeRMAs2XQ==
 config:
+  deploy-cat-infra:deploycat-auth-secret:
+    secure: v1:d9nnCZTSfAe437Y+:EMjiSJWP0gHKkoDrfJgbgvxtMXQZwNX4ciuBG/sbf9VGGOOd/qz0UzcWCfbLM4QjBoSS9iDjcfcjgPWZ5wWvblSbHwtR6IkmDT7Qibzhhgc=
+  deploy-cat-infra:deploycat-github-id:
+    secure: v1:2l1l2lQSwKdWxGR3:MnRIPRYBGH7U8ExdAuxpHd3Qxh44A9Roa7AcrtCivGC8EuU4
+  deploy-cat-infra:deploycat-github-secret:
+    secure: v1:IiL1e0lCRa37YCnl:diuddx0Uk+4eFPHRt+ZSqZ77F+KcsgOS+bobq970uadejVPVSKEovOoF9j1enNpZKfc2EJZMyE8=
   deploy-cat-infra:do-access-token:
     secure: v1:18SQRJXCzDP6pi06:snc2zJwY8b3UfsOzQKua3Jm2lSK8bnBYOYb7jCvcdEfKizPmyTUvF1OGM7Kv86RXf3JRzGHRdBHAMFlQYvH3ZnAboXWfAG9w/vuV0sjNb1OTubLlpLzm
   deploy-cat-infra:knative-domain: deploy.fish

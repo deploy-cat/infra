@@ -22,7 +22,21 @@ export class KnativeOperator extends pulumi.ComponentResource {
     const knativeOperator = new k8s.yaml.ConfigFile(
       "knative-operator",
       {
-        file: "https://github.com/knative/operator/releases/download/knative-v1.12.2/operator.yaml",
+        file: "https://github.com/knative/operator/releases/download/knative-v1.13.2/operator.yaml",
+      },
+      {
+        provider: opts?.provider,
+        parent: this,
+      }
+    );
+
+    const knativeCertmanager = new k8s.yaml.ConfigFile(
+      "knative-net-certmanager",
+      {
+        file: "https://github.com/knative/net-certmanager/releases/download/knative-v1.13.0/release.yaml",
+        transformations: [
+          // (res) => res.groupVersionKind === "v1/ConfigMap" && res.name === "config-certmanager"
+        ],
       },
       {
         provider: opts?.provider,
@@ -56,17 +70,17 @@ export class KnativeOperator extends pulumi.ComponentResource {
           config: {
             network: {
               "ingress-class": "kourier.ingress.networking.knative.dev",
-              // "auto-tls": "Enabled",
-              // "http-protocol": "Redirected",
-              // "namespace-wildcard-cert-selector": JSON.stringify({
-              //   matchExpressions: [
-              //     {
-              //       key: "networking.knative.dev/disableWildcardCert",
-              //       operator: "NotIn",
-              //       values: [true],
-              //     },
-              //   ],
-              // }),
+              "auto-tls": "Enabled",
+              "http-protocol": "Redirected",
+              "namespace-wildcard-cert-selector": JSON.stringify({
+                matchExpressions: [
+                  {
+                    key: "networking.knative.dev/disableWildcardCert",
+                    operator: "NotIn",
+                    values: [true],
+                  },
+                ],
+              }),
             },
             domain: {
               [args.hostname.toString()]: "",
@@ -75,6 +89,60 @@ export class KnativeOperator extends pulumi.ComponentResource {
         },
       },
       { provider: opts?.provider, parent: this, dependsOn: [knativeOperator] }
+    );
+
+    // new k8s.core.v1.ConfigMap("config-certmanager", {
+    //   metadata: {
+    //     name: "config-certmanager",
+    //     namespace: namespace.metadata.name,
+    //     labels: {
+    //       "networking.knative.dev/certificate-provider": "cert-manager",
+    //     },
+    //   },
+    //   data: {
+    //     issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
+    //       Object.entries({
+    //         kind: "ClusterIssuer",
+    //         name,
+    //       })
+    //         .map(([key, value]) => `${key}: ${value}`)
+    //         .join("\n")
+    //     ),
+    //   },
+    // });
+
+    // TODO: do not use patch to drop SSA dep, patch config file directly before apply instead
+    const certManagerConfigMap = knativeCertmanager.getResource(
+      "v1/ConfigMap",
+      "knative-serving",
+      "config-certmanager"
+    );
+
+    const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
+      "config-certmanager-patch",
+      {
+        metadata: {
+          name: certManagerConfigMap.metadata.name,
+          namespace: certManagerConfigMap.metadata.namespace,
+          labels: {
+            "networking.knative.dev/certificate-provider": "cert-manager",
+          },
+        },
+        data: {
+          issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
+            Object.entries({
+              kind: "ClusterIssuer",
+              name,
+            })
+              .map(([key, value]) => `${key}: ${value}`)
+              .join("\n")
+          ),
+        },
+      },
+      {
+        provider: opts?.provider,
+        parent: this,
+      }
     );
   }
 }

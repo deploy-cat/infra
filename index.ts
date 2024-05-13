@@ -3,6 +3,7 @@ import * as k8s from "@pulumi/kubernetes";
 import { DeployCatInstance } from "./deploycat/DeployCatInstance";
 import * as digitalocean from "@pulumi/digitalocean";
 import { Cluster } from "./k3se/Cluster";
+import { Longhorn } from "./longhorn";
 
 export const stack = pulumi.getStack();
 export const config = new pulumi.Config();
@@ -21,6 +22,8 @@ export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
   enableServerSideApply: true,
 });
 
+// const longhorn = new Longhorn("longhorn", {}, { provider: doK8sProvider });
+
 // deploy deploycat on cluster
 const deploycat = new DeployCatInstance(
   "hetzner01",
@@ -37,8 +40,25 @@ const deploycat = new DeployCatInstance(
         },
       ],
     },
+    oAuth: {
+      secret: config.requireSecret("deploycat-auth-secret"),
+      apps: {
+        github: {
+          id: config.requireSecret("deploycat-github-id"),
+          secret: config.requireSecret("deploycat-github-secret"),
+        },
+      },
+    },
+    persistance: {
+      storageClass: "longhorn",
+    },
+    database: {
+      name: "deploycat",
+      user: "deploycat",
+      password: "deploycat",
+    },
   },
-  { provider: doK8sProvider, parent: hetzner01 }
+  { provider: doK8sProviderWithSSA, parent: hetzner01, dependsOn: [/* longhorn */] }
 );
 
 // set dns records
