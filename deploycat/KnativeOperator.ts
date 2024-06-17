@@ -35,7 +35,23 @@ export class KnativeOperator extends pulumi.ComponentResource {
       {
         file: "https://github.com/knative/net-certmanager/releases/download/knative-v1.13.0/release.yaml",
         transformations: [
-          // (res) => res.groupVersionKind === "v1/ConfigMap" && res.name === "config-certmanager"
+          (res, opts) => {
+            if (
+              res.kind === "ConfigMap" &&
+              res.metadata.name === "config-certmanager"
+            ) {
+              res.data = {
+                issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
+                  Object.entries({
+                    kind: "ClusterIssuer",
+                    name,
+                  })
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join("\n")
+                ),
+              };
+            }
+          },
         ],
       },
       {
@@ -91,58 +107,38 @@ export class KnativeOperator extends pulumi.ComponentResource {
       { provider: opts?.provider, parent: this, dependsOn: [knativeOperator] }
     );
 
-    // new k8s.core.v1.ConfigMap("config-certmanager", {
-    //   metadata: {
-    //     name: "config-certmanager",
-    //     namespace: namespace.metadata.name,
-    //     labels: {
-    //       "networking.knative.dev/certificate-provider": "cert-manager",
+    // TODO: do not use patch to drop SSA dep, patch config file directly before apply instead
+    // const certManagerConfigMap = knativeCertmanager.getResource(
+    //   "v1/ConfigMap",
+    //   "knative-serving",
+    //   "config-certmanager"
+    // );
+
+    // const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
+    //   "config-certmanager-patch",
+    //   {
+    //     metadata: {
+    //       name: certManagerConfigMap.metadata.name,
+    //       namespace: certManagerConfigMap.metadata.namespace,
+    //       labels: {
+    //         "networking.knative.dev/certificate-provider": "cert-manager",
+    //       },
+    //     },
+    //     data: {
+    //       issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
+    //         Object.entries({
+    //           kind: "ClusterIssuer",
+    //           name,
+    //         })
+    //           .map(([key, value]) => `${key}: ${value}`)
+    //           .join("\n")
+    //       ),
     //     },
     //   },
-    //   data: {
-    //     issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
-    //       Object.entries({
-    //         kind: "ClusterIssuer",
-    //         name,
-    //       })
-    //         .map(([key, value]) => `${key}: ${value}`)
-    //         .join("\n")
-    //     ),
-    //   },
-    // });
-
-    // TODO: do not use patch to drop SSA dep, patch config file directly before apply instead
-    const certManagerConfigMap = knativeCertmanager.getResource(
-      "v1/ConfigMap",
-      "knative-serving",
-      "config-certmanager"
-    );
-
-    const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
-      "config-certmanager-patch",
-      {
-        metadata: {
-          name: certManagerConfigMap.metadata.name,
-          namespace: certManagerConfigMap.metadata.namespace,
-          labels: {
-            "networking.knative.dev/certificate-provider": "cert-manager",
-          },
-        },
-        data: {
-          issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
-            Object.entries({
-              kind: "ClusterIssuer",
-              name,
-            })
-              .map(([key, value]) => `${key}: ${value}`)
-              .join("\n")
-          ),
-        },
-      },
-      {
-        provider: opts?.provider,
-        parent: this,
-      }
-    );
+    //   {
+    //     provider: opts?.provider,
+    //     parent: this,
+    //   }
+    // );
   }
 }

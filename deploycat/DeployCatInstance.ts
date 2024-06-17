@@ -30,7 +30,7 @@ export class DeployCatInstance extends pulumi.ComponentResource {
   letsEncrypt: LetsEncrypt;
   knative: KnativeOperator;
   // web: DeployCatWeb;
-  // namespace: k8s.core.v1.Namespace;
+  namespace: k8s.core.v1.Namespace;
 
   constructor(
     name: string,
@@ -72,13 +72,13 @@ export class DeployCatInstance extends pulumi.ComponentResource {
       }
     );
 
-    // this.namespace = new k8s.core.v1.Namespace(
-    //   "deploycat-namespace",
-    //   {
-    //     metadata: { name: args.namespace },
-    //   },
-    //   { provider: opts?.provider, parent: this }
-    // );
+    this.namespace = new k8s.core.v1.Namespace(
+      "deploycat-namespace",
+      {
+        metadata: { name: args.namespace },
+      },
+      { provider: opts?.provider, parent: this }
+    );
 
     // this.web = new DeployCatWeb(
     //   "deploycatweb",

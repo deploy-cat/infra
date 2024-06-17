@@ -16,13 +16,13 @@ export const hetzner01 = new Cluster("hetzner-01", {
 });
 
 const kubeconfig = hetzner01.kubeconfig;
-export const doK8sProvider = new k8s.Provider("doK8sProvider", { kubeconfig });
-export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
-  kubeconfig,
-  enableServerSideApply: true,
-});
+export const provider = new k8s.Provider("doK8sProvider", { kubeconfig });
+// export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
+//   kubeconfig,
+//   enableServerSideApply: true,
+// });
 
-// const longhorn = new Longhorn("longhorn", {}, { provider: doK8sProvider });
+const longhorn = new Longhorn("longhorn", {}, { provider });
 
 // deploy deploycat on cluster
 const deploycat = new DeployCatInstance(
@@ -58,7 +58,7 @@ const deploycat = new DeployCatInstance(
       password: "deploycat",
     },
   },
-  { provider: doK8sProviderWithSSA, parent: hetzner01, dependsOn: [/* longhorn */] }
+  { provider, parent: hetzner01, dependsOn: [longhorn] }
 );
 
 // set dns records
