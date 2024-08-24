@@ -73,8 +73,15 @@ export class DeployCatInstance extends pulumi.ComponentResource {
     this.knative = new KnativeOperator(
       "knative",
       {
-        hostname: args.hostname,
-        namespaceName: "knative-serving",
+        serving: {
+          enable: true,
+          namespaceName: "knative-serving",
+          domain: args.hostname,
+        },
+        eventing: {
+          enable: true,
+          namespaceName: "knative-eventing",
+        },
         clusterIssuer: this.letsEncrypt.issuer,
       },
       {
@@ -107,6 +114,7 @@ export class DeployCatInstance extends pulumi.ComponentResource {
       },
       {
         provider: opts?.provider,
+        dependsOn: [this.knative],
       }
     );
 
