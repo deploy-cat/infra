@@ -1,7 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import { DeployCatInstance } from "./deploycat/DeployCatInstance";
-import * as digitalocean from "@pulumi/digitalocean";
 import { Cluster } from "./k3se/Cluster";
 import { Longhorn } from "./longhorn";
 
@@ -10,7 +9,7 @@ export const config = new pulumi.Config();
 
 const hostname = config.require("knative-domain");
 
-// deploy k8s cluster on digital ocean
+// deploy k3s cluster on hetzner
 export const hetzner01 = new Cluster("hetzner-01", {
   configPath: `./${stack}.yml`,
 });

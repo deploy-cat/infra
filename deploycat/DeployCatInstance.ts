@@ -5,7 +5,9 @@ import { CertManager } from "./CertManager";
 import { LetsEncrypt } from "./LetsEncrypt";
 import { DeployCatWeb, oAuth } from "./deployCatWeb";
 import { Namespace } from "@pulumi/kubernetes/core/v1";
+import { Prometheus } from "./Prometheus";
 import type { Persistance, Database } from "./Postgres";
+import { PostgresOperator } from "./PostgresOperator";
 
 export type DeployCatInstanceOptions = {
   namespace: pulumi.Input<string>;
@@ -31,6 +33,8 @@ export class DeployCatInstance extends pulumi.ComponentResource {
   knative: KnativeOperator;
   // web: DeployCatWeb;
   namespace: k8s.core.v1.Namespace;
+  cnpg: PostgresOperator;
+  prometheus: Prometheus;
 
   constructor(
     name: string,
@@ -38,6 +42,14 @@ export class DeployCatInstance extends pulumi.ComponentResource {
     opts?: pulumi.ComponentResourceOptions
   ) {
     super(pulumiComponentNamespace, name, args, opts);
+
+    this.namespace = new k8s.core.v1.Namespace(
+      "deploycat-namespace",
+      {
+        metadata: { name: args.namespace },
+      },
+      { provider: opts?.provider, parent: this }
+    );
 
     this.certManager = new CertManager(
       "certmanager",
@@ -72,12 +84,30 @@ export class DeployCatInstance extends pulumi.ComponentResource {
       }
     );
 
-    this.namespace = new k8s.core.v1.Namespace(
-      "deploycat-namespace",
+    this.cnpg = new PostgresOperator(
+      "cnpg",
       {
-        metadata: { name: args.namespace },
+        namespaceName: "cnpg",
       },
-      { provider: opts?.provider, parent: this }
+      {
+        provider: opts?.provider,
+        dependsOn: [this.letsEncrypt],
+        parent: this,
+      }
+    );
+
+    this.prometheus = new Prometheus(
+      "prometheus",
+      {
+        namespaceName: this.namespace.metadata.name,
+        knative: {
+          enableServicemonitor: true,
+          enableDasboards: true,
+        },
+      },
+      {
+        provider: opts?.provider,
+      }
     );
 
     // this.web = new DeployCatWeb(

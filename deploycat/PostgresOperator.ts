@@ -1,31 +1,28 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 
-export type CertManagerOptions = {
-  replicas?: pulumi.Input<number>;
+export type PostgresOperatorOptions = {
   namespaceName: pulumi.Input<string>;
-  helmChartVersion: pulumi.Input<string>;
-  iamRoleArn?: pulumi.Input<string>;
-  hostAliases?: k8s.types.input.core.v1.HostAlias[];
+  helmChartVersion?: pulumi.Input<string>;
 };
 
-const pulumiComponentNamespace: string = "deploycat:CertManager";
+const pulumiComponentNamespace: string = "deploycat:PostgresOperator";
 
-export class CertManager extends pulumi.ComponentResource {
+export class PostgresOperator extends pulumi.ComponentResource {
   public readonly namespace: k8s.core.v1.Namespace;
   public readonly chart: k8s.helm.v3.Release;
 
   constructor(
     name: string,
-    args: CertManagerOptions,
+    args: PostgresOperatorOptions,
     opts?: pulumi.ComponentResourceOptions
   ) {
     super(pulumiComponentNamespace, name, args, opts);
 
     this.namespace = new k8s.core.v1.Namespace(
-      "cert-manager",
+      "cnpg",
       {
-        metadata: { name: "cert-manager" },
+        metadata: { name: args.namespaceName },
       },
       { provider: opts?.provider, parent: this }
     );
@@ -34,10 +31,10 @@ export class CertManager extends pulumi.ComponentResource {
       name,
       {
         namespace: this.namespace.metadata.name,
-        chart: "cert-manager",
-        version: args.helmChartVersion || "v1.14.4",
+        chart: "cloudnative-pg",
+        version: args.helmChartVersion || "0.21.5",
         repositoryOpts: {
-          repo: "https://charts.jetstack.io",
+          repo: "https://cloudnative-pg.github.io/charts",
         },
         values: {
           installCRDs: true,

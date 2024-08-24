@@ -106,39 +106,5 @@ export class KnativeOperator extends pulumi.ComponentResource {
       },
       { provider: opts?.provider, parent: this, dependsOn: [knativeOperator] }
     );
-
-    // TODO: do not use patch to drop SSA dep, patch config file directly before apply instead
-    // const certManagerConfigMap = knativeCertmanager.getResource(
-    //   "v1/ConfigMap",
-    //   "knative-serving",
-    //   "config-certmanager"
-    // );
-
-    // const certManagerConfigMapPatch = new k8s.core.v1.ConfigMapPatch(
-    //   "config-certmanager-patch",
-    //   {
-    //     metadata: {
-    //       name: certManagerConfigMap.metadata.name,
-    //       namespace: certManagerConfigMap.metadata.namespace,
-    //       labels: {
-    //         "networking.knative.dev/certificate-provider": "cert-manager",
-    //       },
-    //     },
-    //     data: {
-    //       issuerRef: args.clusterIssuer.metadata.apply(({ name }) =>
-    //         Object.entries({
-    //           kind: "ClusterIssuer",
-    //           name,
-    //         })
-    //           .map(([key, value]) => `${key}: ${value}`)
-    //           .join("\n")
-    //       ),
-    //     },
-    //   },
-    //   {
-    //     provider: opts?.provider,
-    //     parent: this,
-    //   }
-    // );
   }
 }

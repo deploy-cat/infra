@@ -11,7 +11,7 @@ export type LetsEncryptOptions = {
   extraSolvers?: Array<any>;
 };
 
-const pulumiComponentNamespace: string = "daploycat:LetsEncrypt";
+const pulumiComponentNamespace: string = "deploycat:LetsEncrypt";
 
 export class LetsEncrypt extends pulumi.ComponentResource {
   public readonly issuer: k8s.apiextensions.CustomResource;
