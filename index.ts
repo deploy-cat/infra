@@ -9,17 +9,8 @@ export const config = new pulumi.Config();
 
 const hostname = config.require("knative-domain");
 
-// deploy k3s cluster on hetzner
-export const hetzner01 = new Cluster("hetzner-01", {
-  configPath: `./${stack}.yml`,
-});
-
-const kubeconfig = hetzner01.kubeconfig;
-export const provider = new k8s.Provider("doK8sProvider", { kubeconfig });
-// export const doK8sProviderWithSSA = new k8s.Provider("doK8sProviderWithSSA", {
-//   kubeconfig,
-//   enableServerSideApply: true,
-// });
+const kubeconfig = config.requireSecret("kubeconfig");
+export const provider = new k8s.Provider("k8sProvider", { kubeconfig });
 
 const longhorn = new Longhorn("longhorn", {}, { provider });
 
@@ -57,7 +48,7 @@ const deploycat = new DeployCatInstance(
       password: "deploycat",
     },
   },
-  { provider, parent: hetzner01, dependsOn: [longhorn] }
+  { provider, dependsOn: [longhorn] }
 );
 
 // set dns records
